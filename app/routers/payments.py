@@ -147,7 +147,10 @@ async def verify_payment(
     payment.razorpay_signature = body.razorpay_signature
     confirmed_reg = await confirm_payment_and_generate_ticket(reg.id, payment, db)
 
-    send_ticket_email.delay(str(confirmed_reg.id))
+    try:
+        send_ticket_email.delay(str(confirmed_reg.id))
+    except Exception as e:
+        logger.warning(f"Could not enqueue ticket email (Redis unavailable?): {e}")
 
     logger.info(f"Payment confirmed for registration {reg.id}, ticket {confirmed_reg.ticket_number}")
     return PaymentVerifiedResponse(
@@ -198,7 +201,10 @@ async def razorpay_webhook(request: Request, db: AsyncSession = Depends(get_db))
             payment.registration_id, payment, db
         )
 
-        send_ticket_email.delay(str(confirmed_reg.id))
+        try:
+            send_ticket_email.delay(str(confirmed_reg.id))
+        except Exception as e:
+            logger.warning(f"Could not enqueue ticket email (Redis unavailable?): {e}")
 
         logger.info(f"Webhook confirmed ticket {confirmed_reg.ticket_number} for order {order_id}")
         return {"status": "ok"}

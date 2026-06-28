@@ -17,16 +17,16 @@ async def main():
         await seed_event(db)
         await seed_volunteer(db)
         await db.commit()
-    print("✓ Seed complete. Run the API and use these credentials to test.")
+    print("[OK] Seed complete. Run the API and use these credentials to test.")
 
 
 async def seed_event(db: AsyncSession):
     existing = await db.scalar(select(Event).where(Event.name == "IEEE TechFest 2026"))
     if existing:
-        print("  Event already exists — skipping")
+        print("  Event already exists -- skipping")
         return
 
-    print("  Creating event: IEEE TechFest 2026 (capacity: 500, price: ₹199.00)")
+    print("  Creating event: IEEE TechFest 2026 (capacity: 500, price: Rs.199.00)")
     event = Event(
         name="IEEE TechFest 2026",
         description="Annual technical festival by IEEE RVCE Student Branch.",
@@ -39,13 +39,13 @@ async def seed_event(db: AsyncSession):
     )
     db.add(event)
     await db.flush()
-    print("  ✓ Event created")
+    print("  [OK] Event created")
 
 
 async def seed_volunteer(db: AsyncSession):
     existing = await db.scalar(select(User).where(User.email == "volunteer@techfest.com"))
     if existing:
-        print("  Volunteer already exists — skipping")
+        print("  Volunteer already exists -- skipping")
         return
 
     print("  Creating volunteer account: volunteer@techfest.com")
@@ -59,7 +59,7 @@ async def seed_volunteer(db: AsyncSession):
     )
     db.add(volunteer)
     await db.flush()
-    print("  ✓ Volunteer created (password: volunteer123)")
+    print("  [OK] Volunteer created (password: volunteer123)")
 
 
 if __name__ == "__main__":
